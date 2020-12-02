@@ -19,14 +19,18 @@ public class SwiftFlutterLivePhotoPlugin: NSObject, FlutterPlugin {
     switch call.method {
     
             case "generateFromLocalFile":
+                
                 let args = call.arguments as! [String: Any]
-                guard let videoURL = args["fileUrl"] as? String else {
+                guard let fileUrl = args["fileUrl"] as? String else {
                     result(false)
                     return
                 }
-                
-                print("items")
-                
+                let livePhotoClient = LivePhotoClient(callback: {() in
+                    result(true)
+                })
+
+                print(fileUrl)
+                livePhotoClient.convertMp4ToMov(mp4Path: URL(string: fileUrl)!)
                     
             case "generateFromURL":
                 let args = call.arguments as! [String: Any]
@@ -93,8 +97,14 @@ class LivePhotoClient {
         }
     }
     
+    
+    
+    
+    
+    
+    
     // MP4をMovに変換する
-    private func convertMp4ToMov(mp4Path: URL) {
+    public func convertMp4ToMov(mp4Path: URL) {
         // srcのビデオをmovに変換する
         let avAsset = AVURLAsset(url: mp4Path)
         let preset = AVAssetExportPresetPassthrough
