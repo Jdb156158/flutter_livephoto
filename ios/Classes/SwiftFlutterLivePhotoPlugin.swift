@@ -27,7 +27,7 @@ public class SwiftFlutterLivePhotoPlugin: NSObject, FlutterPlugin {
                 }
 
 
-               let pngUrl =  let pngUrl = args["pngUrl"]
+                let pngUrl = args["pngUrl"]
 
                 let livePhotoClient = LivePhotoClient(callback: {() in
                     result(true)

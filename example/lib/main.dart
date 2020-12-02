@@ -16,8 +16,8 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   String _platformVersion = 'Unknown';
-
-  final image = ImagePicker();
+  String videoImage;
+  String pngImage;
 
   @override
   void initState() {
@@ -27,21 +27,37 @@ class _MyAppState extends State<MyApp> {
   selectUrlVideo() async {
     // PickedFile file = await image.getVideo(source: ImageSource.gallery);
 
-    String videoUrl = "https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4";
+    String videoUrl =
+        "https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4";
     var result = await FlutterLivePhoto.generate(videoURL: videoUrl);
     // print(file.path);
     print("result = $result");
   }
 
-  selectLocalVideo() async{
+  selectVideo() async {
+    var image = ImagePicker();
     PickedFile file = await image.getVideo(source: ImageSource.gallery);
 
-    var imageresul = await image.getImage(source: ImageSource.gallery);
+    videoImage = file.path;
+    setState(() {
 
-    var result = await FlutterLivePhoto.generateLocal(fileUrl: file.path,pngUrl: imageresul.path);
+    });
+  }
 
-    // print(file.path);
-    print("result = $result");
+  selectImage() async {
+    var image = ImagePicker();
+    PickedFile file = await image.getImage(source: ImageSource.gallery);
+    pngImage = file.path;
+    setState(() {
+
+    });
+  }
+
+  selectLocalVideo() async {
+    var result = await FlutterLivePhoto.generateLocal(
+        fileUrl: videoImage, pngUrl: pngImage);
+
+    print("result $result");
   }
 
   @override
@@ -52,21 +68,27 @@ class _MyAppState extends State<MyApp> {
           title: const Text('Plugin example app'),
         ),
         body: Center(
-          child: Column(
+            child: Column(
+          children: [
+            Text("data$videoImage"),
 
-            children: [
-              RaisedButton(
-                onPressed: selectUrlVideo,
-                child: Text("选择video视频"),
-              ),
+            Container(height: 50,),
+            Text("data$pngImage"),
 
-              RaisedButton(
-                onPressed: selectLocalVideo,
-                child: Text("选择本地视频"),
-              ),
-            ],
-          )
-        ),
+            RaisedButton(
+              onPressed: selectVideo,
+              child: Text("选视频"),
+            ),
+            RaisedButton(
+              onPressed: selectImage,
+              child: Text("选图片"),
+            ),
+            RaisedButton(
+              onPressed: selectLocalVideo,
+              child: Text("合成"),
+            ),
+          ],
+        )),
       ),
     );
   }
