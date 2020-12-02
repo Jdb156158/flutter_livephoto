@@ -35,7 +35,11 @@ class _MyAppState extends State<MyApp> {
 
   selectLocalVideo() async{
     PickedFile file = await image.getVideo(source: ImageSource.gallery);
-    var result = await FlutterLivePhoto.generateLocal(fileUrl: file.path);
+
+    var imageresul = await image.getImage(source: ImageSource.gallery);
+
+    var result = await FlutterLivePhoto.generateLocal(fileUrl: file.path,pngUrl: imageresul.path);
+
     // print(file.path);
     print("result = $result");
   }

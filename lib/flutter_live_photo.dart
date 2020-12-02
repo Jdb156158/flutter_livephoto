@@ -23,11 +23,13 @@ class FlutterLivePhoto {
 
   static Future<bool> generateLocal({
     String fileUrl,
+    String pngUrl
   }) async {
     final bool status = await _channel.invokeMethod(
       'generateFromLocalFile',
       <String, dynamic>{
         "fileUrl": fileUrl,
+        "pngUrl":pngUrl
       },
     );
     return status;
