@@ -7,8 +7,35 @@ class FlutterLivePhoto {
   static const MethodChannel _channel =
       const MethodChannel('flutter_live_photo');
 
-  static Future<String> get platformVersion async {
-    final String version = await _channel.invokeMethod('getPlatformVersion');
-    return version;
+
+  static Future<bool> generate({
+    String videoURL,
+  }) async {
+    final bool status = await _channel.invokeMethod(
+      'generateFromURL',
+      <String, dynamic>{
+        "videoURL": videoURL,
+      },
+    );
+    return status;
+  }
+
+
+  static Future<bool> generateLocal({
+    String fileUrl,
+  }) async {
+    final bool status = await _channel.invokeMethod(
+      'generateFromLocalFile',
+      <String, dynamic>{
+        "fileUrl": fileUrl,
+      },
+    );
+    return status;
+  }
+
+
+  static Future<bool> openSettings() async {
+    final bool status = await _channel.invokeMethod('openSettings');
+    return status;
   }
 }
