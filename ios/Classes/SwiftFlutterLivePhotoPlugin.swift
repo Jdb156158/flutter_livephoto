@@ -32,6 +32,13 @@ public class SwiftFlutterLivePhotoPlugin: NSObject, FlutterPlugin {
                 print(fileUrl)
                 livePhotoClient.convertMp4ToMov(mp4Path: URL(string: fileUrl)!)
                     
+    
+//                print("AVAssetExportSessionStatus completed")
+//                livePhotoClient.generateThumbnail(movURL:  URL(string: fileUrl)!)
+//                print("generateThumbnail completed")
+//                livePhotoClient.generateLivePhoto()
+                
+                
             case "generateFromURL":
                 let args = call.arguments as! [String: Any]
                 guard let videoURL = args["videoURL"] as? String else {
@@ -142,7 +149,7 @@ class LivePhotoClient {
     }
     
     // LivePhotoの生成
-    private func generateLivePhoto() {
+    public func generateLivePhoto() {
         let pngPath = self.filePath(forKey: STILL_KEY)!
         let movPath = self.filePath(forKey: MOV_KEY)!
         if #available(iOS 9.1, *) {
@@ -166,7 +173,7 @@ class LivePhotoClient {
     }
     
     // ビデオからサムネイルpngを生成する
-    private func generateThumbnail(movURL: URL?) {
+    public func generateThumbnail(movURL: URL?) {
         guard let movURL = movURL else { return }
         let asset = AVURLAsset(url: movURL, options: nil)
         let imgGenerator = AVAssetImageGenerator(asset: asset)

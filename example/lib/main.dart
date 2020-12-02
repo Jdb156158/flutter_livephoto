@@ -24,10 +24,20 @@ class _MyAppState extends State<MyApp> {
     super.initState();
   }
 
-  selectVideo() async {
-    PickedFile file = await image.getVideo(source: ImageSource.gallery);
+  selectUrlVideo() async {
+    // PickedFile file = await image.getVideo(source: ImageSource.gallery);
 
-    print(file.path);
+    String videoUrl = "https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4";
+    var result = await FlutterLivePhoto.generate(videoURL: videoUrl);
+    // print(file.path);
+    print("result = $result");
+  }
+
+  selectLocalVideo() async{
+    PickedFile file = await image.getVideo(source: ImageSource.gallery);
+    var result = await FlutterLivePhoto.generateLocal(fileUrl: file.path);
+    // print(file.path);
+    print("result = $result");
   }
 
   @override
@@ -38,10 +48,20 @@ class _MyAppState extends State<MyApp> {
           title: const Text('Plugin example app'),
         ),
         body: Center(
-          child: RaisedButton(
-            onPressed: selectVideo,
-            child: Text("选择视频"),
-          ),
+          child: Column(
+
+            children: [
+              RaisedButton(
+                onPressed: selectUrlVideo,
+                child: Text("选择video视频"),
+              ),
+
+              RaisedButton(
+                onPressed: selectLocalVideo,
+                child: Text("选择本地视频"),
+              ),
+            ],
+          )
         ),
       ),
     );
