@@ -5,6 +5,7 @@ import Foundation
 import AVFoundation
 import Photos
 import MobileCoreServices
+import OcFlutterLivePhotoPlugin
 
 public class SwiftFlutterLivePhotoPlugin: NSObject, FlutterPlugin {
   public static func register(with registrar: FlutterPluginRegistrar) {
@@ -17,24 +18,27 @@ public class SwiftFlutterLivePhotoPlugin: NSObject, FlutterPlugin {
 
             
     switch call.method {
-    
+
             case "generateFromLocalFile":
-                
                 let args = call.arguments as! [String: Any]
                 guard let fileUrl = args["fileUrl"] as? String else {
                     result(false)
                     return
                 }
 
-
-                let pngUrl = args["pngUrl"]
+                guard let pngUrl = args["pngUrl"] as? String else {
+                    result(false)
+                    return
+                }
 
                 let livePhotoClient = LivePhotoClient(callback: {() in
                     result(true)
                 })
 
                 print(fileUrl)
-                livePhotoClient.convertMp4ToMov(mp4Path: URL(string: fileUrl)!)
+                //livePhotoClient.convertMp4ToMov(mp4Path: URL(string: fileUrl)!)
+    
+                livePhotoClient.generateMovLivePhoto(movPath: URL(string: fileUrl)!, pngPath: URL(string: pngUrl)!)
                     
     
 //                print("AVAssetExportSessionStatus completed")
@@ -108,12 +112,6 @@ class LivePhotoClient {
         }
     }
     
-    
-    
-    
-    
-    
-    
     // MP4をMovに変換する
     public func convertMp4ToMov(mp4Path: URL) {
         // srcのビデオをmovに変換する
@@ -149,6 +147,29 @@ class LivePhotoClient {
                     break
                 }
             }
+        }
+    }
+    
+    public func generateMovLivePhoto(movPath: URL,pngPath: URL) {
+        let pngPath = self.filePath(forKey: STILL_KEY)!
+        let movPath = self.filePath(forKey: MOV_KEY)!
+        if #available(iOS 9.1, *) {
+            print("Start to generate LivePhoto")
+            LivePhoto.generate(from: pngPath, videoURL: movPath, progress: { percent in }, completion: { livePhoto, resources in
+                print("Generation done")
+                if let resources = resources {
+                    print("Success to generate Live Photo")
+                    LivePhoto.saveToLibrary(resources, completion: {(success) in
+                        if success {
+                            print("Successed to save Photos")
+                            self.completedCallback()
+                        } else {
+                            print("Failed to save Photos")
+                            self.completedCallback()
+                        }
+                    })
+                }
+            })
         }
     }
     

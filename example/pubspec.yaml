@@ -12,7 +12,9 @@ dependencies:
   flutter:
     sdk: flutter
   image_picker: ^0.6.7+14
+  path_provider:
   flutter_live_photo:
+
     # When depending on this package from a real application you should use:
     #   flutter_live_photo: ^x.y.z
     # See https://dart.dev/tools/pub/dependencies#version-constraints
