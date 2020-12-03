@@ -24,6 +24,7 @@ class _MyAppState extends State<MyApp> {
 
   Directory _libraryDirectory;
 
+  String onlineUrl = "https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4";
   @override
   void initState() {
     super.initState();
@@ -59,6 +60,7 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
+
   selectImage() async {
     var image = ImagePicker();
     PickedFile file = await image.getImage(source: ImageSource.gallery);
@@ -76,7 +78,6 @@ class _MyAppState extends State<MyApp> {
   selectLocalVideo() async {
     var result = await FlutterLivePhoto.generateLocal(
         fileUrl: videoImage, pngUrl: pngImage);
-
     print("result $result");
   }
 
@@ -107,6 +108,13 @@ class _MyAppState extends State<MyApp> {
                   onPressed: selectLocalVideo,
                   child: Text("合成"),
                 ),
+
+                RaisedButton(
+                  onPressed: selectUrlVideo,
+                  child: Text("合成线上视频"),
+                ),
+
+
               ],
             )),
       ),
