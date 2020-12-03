@@ -6,6 +6,7 @@ import AVFoundation
 import Photos
 import MobileCoreServices
 
+
 public class SwiftFlutterLivePhotoPlugin: NSObject, FlutterPlugin {
   public static func register(with registrar: FlutterPluginRegistrar) {
     let channel = FlutterMethodChannel(name: "flutter_live_photo", binaryMessenger: registrar.messenger())
@@ -27,7 +28,12 @@ public class SwiftFlutterLivePhotoPlugin: NSObject, FlutterPlugin {
                 }
 
 
-                let pngUrl = args["pngUrl"]
+                guard let pngUrl = args["pngUrl"] as? String else {
+                    result(false)
+                    return
+                }
+                
+                
 
                 let livePhotoClient = LivePhotoClient(callback: {() in
                     result(true)

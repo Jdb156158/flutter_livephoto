@@ -6,11 +6,12 @@
 //
 
 #import <Foundation/Foundation.h>
-
+#import <Flutter/Flutter.h>
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OcFlutterLivePhotoPlugin : NSObject
-- (void)save2WithPhotoUrl:(NSString *)photoURLstring videoUrl:(NSString *)videoURLstring;
+@interface OcFlutterLivePhotoPlugin : NSObject<FlutterPlugin>
++ (void)registerWithRegistrar:(NSObject <FlutterPluginRegistrar> *)registrar;
++ (OcFlutterLivePhotoPlugin *)shared;
 @end
 
 NS_ASSUME_NONNULL_END
