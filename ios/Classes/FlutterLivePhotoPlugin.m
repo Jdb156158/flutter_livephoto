@@ -6,11 +6,11 @@
 // is not copied when this plugin is created as a library.
 // https://forums.swift.org/t/swift-static-libraries-dont-copy-generated-objective-c-header/19816
 #import "flutter_live_photo-Swift.h"
-#import "OcFlutterLivePhotoPlugin"
+#import "OcFlutterLivePhotoPlugin.h"
 #endif
 
 @implementation FlutterLivePhotoPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
-  [SwiftFlutterLivePhotoPlugin registerWithRegistrar:registrar];
+    [OcFlutterLivePhotoPlugin registerWithRegistrar:registrar];
 }
 @end
