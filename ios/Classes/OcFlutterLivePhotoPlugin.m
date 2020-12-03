@@ -30,24 +30,7 @@
     return _shared;
 }
 
-+ (void)registerWithRegistrar:(NSObject <FlutterPluginRegistrar> *)registrar {
-    
-    FlutterMethodChannel *channel = [FlutterMethodChannel
-            methodChannelWithName:@"flutter_live_photo"
-                  binaryMessenger:[registrar messenger]];
-    [registrar addMethodCallDelegate:[self shared] channel:channel];
-    
-}
-
-- (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
-    if ([@"generateFromLocalFile" isEqualToString:call.method]) {
-        [self save2WithPhotoUrl:call.arguments[@"pngUrl"] videoUrl:call.arguments[@"fileUrl"] result:result];
-    }else{
-        result(FlutterMethodNotImplemented);
-    }
-}
-
--(void)save2WithPhotoUrl:(NSString *)photoURLstring videoUrl:(NSString *)videoURLstring result:(FlutterResult)result {
+-(void)save2WithPhotoUrl:(NSString *)photoURLstring videoUrl:(NSString *)videoURLstring {
     
     NSLog(@"photoURLstring:%@",photoURLstring);
     NSLog(@"videoURLstring:%@",videoURLstring);
@@ -58,14 +41,18 @@
     BOOL available = [PHAssetCreationRequest supportsAssetResourceTypes:@[@(PHAssetResourceTypePhoto), @(PHAssetResourceTypePairedVideo)]];
     if (!available) {
         NSLog(@"设备不支持LivePhoto.");
-        result(FlutterMethodNotImplemented);
+        if (self.Result) {
+            self.Result(NO);
+        }
         return;
     }
     
     [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
         if (status != PHAuthorizationStatusAuthorized) {
             NSLog(@"照片库被拒绝访问.");
-            result(FlutterMethodNotImplemented);
+            if (self.Result) {
+                self.Result(NO);
+            }
             return;
         }
         
@@ -85,42 +72,19 @@
             } completionHandler:^(BOOL success, NSError * _Nullable error) {
                 if (success) {
                     NSLog(@"Saved.");
-                    //iOS怎么回调给flutter
-                    result([@"iOS " stringByAppendingString:[[UIDevice currentDevice] systemVersion]]);
+                    [self deleteFlutterSaveIosFile:photoURLstring andVideoString:videoURLstring];
+                    if (self.Result) {
+                        self.Result(YES);
+                    }
                 }else {
                     NSLog(@"Save error: %@", error);
-                    //iOS怎么回调给flutter
-                    result([@"iOS " stringByAppendingString:[[UIDevice currentDevice] systemVersion]]);
+                    if (self.Result) {
+                        self.Result(NO);
+                    }
                 }
-                dispatch_async(dispatch_get_main_queue(), ^{
- 
-                    NSString *title = success ? @"Saved" : @"Error";
-                    NSLog(@"====成功或者失败信息：%@=====",title);
-                });
             }];
         }];
     }];
-    
-    /*
-    [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
-        PHAssetCreationRequest *request = [PHAssetCreationRequest creationRequestForAsset];
-        [request addResourceWithType:PHAssetResourceTypePhoto
-                             fileURL:photoURL
-                             options:nil];
-        [request addResourceWithType:PHAssetResourceTypePairedVideo
-                             fileURL:videoURL
-                             options:nil];
-        
-    } completionHandler:^(BOOL success,
-                          NSError * _Nullable error) {
-        if (success) {
-            NSLog(@"save success==保存成功");
-            result(@"1");
-        } else {
-            NSLog(@"error==保存失败: %@",error);
-            result(@"0");
-        }
-    }];*/
     
 }
 
@@ -306,7 +270,14 @@
     }
 }
 
-- (void)deleteFlutterSaveIosFile:(NSString *)file {
+//如果成功则删除flutter那边保存在沙盒Library/Caches下的所需的合成livephoto文件
+- (void)deleteFlutterSaveIosFile:(NSString *)photoURLstring andVideoString:(NSString *)videoURLstring{
     
+    // 实例化NSFileManager
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    bool removepng = [fileManager removeItemAtPath:photoURLstring error:nil];
+    bool removevideo = [fileManager removeItemAtPath:videoURLstring error:nil];
+    NSLog(@"===清除废旧不用的资源情况:【removepng：%d===removepng:%d】",removepng,removevideo);
+
 }
 @end

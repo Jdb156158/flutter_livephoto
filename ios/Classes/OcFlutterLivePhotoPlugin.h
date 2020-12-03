@@ -9,9 +9,10 @@
 #import <Flutter/Flutter.h>
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OcFlutterLivePhotoPlugin : NSObject<FlutterPlugin>
-+ (void)registerWithRegistrar:(NSObject <FlutterPluginRegistrar> *)registrar;
+@interface OcFlutterLivePhotoPlugin : NSObject
+@property (nonatomic,copy) void (^Result)(bool res);
 + (OcFlutterLivePhotoPlugin *)shared;
+-(void)save2WithPhotoUrl:(NSString *)photoURLstring videoUrl:(NSString *)videoURLstring;
 @end
 
 NS_ASSUME_NONNULL_END
