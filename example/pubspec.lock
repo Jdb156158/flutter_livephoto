@@ -77,7 +77,7 @@ packages:
     source: sdk
     version: "0.0.0"
   flutter_live_photo:
-    dependency: "direct main"
+    dependency: "direct dev"
     description:
       path: ".."
       relative: true

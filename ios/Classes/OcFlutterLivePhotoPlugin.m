@@ -10,6 +10,10 @@
 #import <CoreMedia/CMMetadata.h>
 #import <MobileCoreServices/MobileCoreServices.h>
 
+#import <AVFoundation/AVAsset.h>
+#import <AVFoundation/AVAssetImageGenerator.h>
+#import <AVFoundation/AVTime.h>
+
 @interface OcFlutterLivePhotoPlugin()
 @property (nonatomic) AVAssetExportSession *session;
 @property (nonatomic) AVURLAsset *asset;
@@ -35,8 +39,15 @@
     NSLog(@"photoURLstring:%@",photoURLstring);
     NSLog(@"videoURLstring:%@",videoURLstring);
     
-    NSURL *photoURL = [NSURL fileURLWithPath:photoURLstring];//@"...picture.jpg"
+    
     NSURL *videoURL = [NSURL fileURLWithPath:videoURLstring];//@"...video.mov"
+    
+    if (photoURLstring == nil || photoURLstring.length == 0 ) {
+        photoURLstring = [self getVideoPreViewImage:videoURLstring];
+    }
+    
+    NSURL *photoURL = [NSURL fileURLWithPath:photoURLstring];
+    
     
     BOOL available = [PHAssetCreationRequest supportsAssetResourceTypes:@[@(PHAssetResourceTypePhoto), @(PHAssetResourceTypePairedVideo)]];
     if (!available) {
@@ -279,5 +290,37 @@
     bool removevideo = [fileManager removeItemAtPath:videoURLstring error:nil];
     NSLog(@"===清除废旧不用的资源情况:【removepng：%d===removepng:%d】",removepng,removevideo);
 
+}
+
+// 获取视频第一帧
+- (NSString *)getVideoPreViewImage:(NSString *)videoFile{
+    //本地视频
+    AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:[NSURL fileURLWithPath:videoFile] options:nil];
+    AVAssetImageGenerator *assetGen = [[AVAssetImageGenerator alloc] initWithAsset:asset];
+    assetGen.appliesPreferredTrackTransform = YES;
+    CMTime time = CMTimeMakeWithSeconds(0.0, 600);
+    NSError *error = nil;
+    CMTime actualTime;
+    CGImageRef image = [assetGen copyCGImageAtTime:time actualTime:&actualTime error:&error];
+    UIImage *videoImage = [[UIImage alloc] initWithCGImage:image];
+    CGImageRelease(image);
+    
+    NSString *filePath = @"";
+    if (videoImage == nil) {
+        //获取视频第一帧失败
+    }else{
+        NSArray *paths =NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,NSUserDomainMask,YES);
+        
+        
+        filePath = [[paths objectAtIndex:0]stringByAppendingPathComponent:
+                              [NSString stringWithFormat:@"fist_voice.jpg"]];  // 保存文件的名称
+        
+        BOOL result =[UIImagePNGRepresentation(videoImage)writeToFile:filePath  atomically:YES]; // 保存成功会返回YES
+        if (result == YES) {
+            NSLog(@"保存成功");
+        }
+
+    }
+    return filePath;
 }
 @end
