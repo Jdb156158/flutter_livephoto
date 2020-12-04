@@ -29,7 +29,7 @@ class FlutterLivePhoto {
       'generateFromLocalFile',
       <String, dynamic>{
         "fileUrl": fileUrl,
-        "pngUrl":pngUrl
+        "pngUrl":pngUrl==null?"":pngUrl
       },
     );
     return status;
