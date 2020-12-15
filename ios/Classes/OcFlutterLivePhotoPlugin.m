@@ -67,23 +67,28 @@
             return;
         }
         
-        dispatch_async(dispatch_get_main_queue(), ^{
-            //保存中
-        });
         NSString *identifier = [NSUUID UUID].UUIDString;
         [self useAssetWriter:photoURL video:videoURL identifier:identifier complete:^(BOOL success, NSString *photoFile, NSString *videoFile, NSError *error) {
+            
+            NSLog(@"photoFile:%@",photoFile);
+            NSLog(@"videoFile:%@",videoFile);
             
             NSURL *photo = [NSURL fileURLWithPath:photoFile];
             NSURL *video = [NSURL fileURLWithPath:videoFile];
             
             [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+                
                 PHAssetCreationRequest *request = [PHAssetCreationRequest creationRequestForAsset];
                 [request addResourceWithType:PHAssetResourceTypePhoto fileURL:photo options:nil];
                 [request addResourceWithType:PHAssetResourceTypePairedVideo fileURL:video options:nil];
+                
             } completionHandler:^(BOOL success, NSError * _Nullable error) {
+            
+                [self deleteFlutterSaveIosFile:photoFile andVideoString:videoFile];
+                
                 if (success) {
                     NSLog(@"Saved.");
-                    [self deleteFlutterSaveIosFile:photoURLstring andVideoString:videoURLstring];
+                    
                     if (self.Result) {
                         self.Result(YES);
                     }
